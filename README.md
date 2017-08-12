@@ -35,7 +35,7 @@ $ bash download.sh
 ## 2. Run demo.py
 
 ```
-$ python demo.py sample.jpg
+$ python demo.py -g 0 -m Cityscapes -f aachen_000000_000019_leftImg8bit.png
 ```
 
 
