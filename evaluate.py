@@ -70,7 +70,19 @@ def scale_process(model, img, n_class, base_size, crop_size, scale):
                 sx = xx * stride
                 img_sub = img_scaled[:, sy:sy + crop_size, sx:sx + crop_size]
                 count[sy:sy + crop_size, sx:sx + crop_size] += 1
+                if sy + crop_size >= new_rows:
+                    pad_h = sy + crop_size - new_rows
+                    img_sub = np.pad(
+                        img_sub, ((0, 0), (0, pad_h), (0, 0)), 'constant')
+                if sx + crop_size >= new_cols:
+                    pad_w = sx + crop_size - new_cols
+                    img_sub = np.pad(
+                        img_sub, ((0, 0), (0, 0), (0, pad_w)), 'constant')
                 pred_sub = model.predict(img_sub[None, ...], argmax=False)
+                if sy + crop_size >= new_rows:
+                    pred_sub = pred_sub[:, :, :-pad_h, :]
+                if sx + crop_size >= new_cols:
+                    pred_sub = pred_sub[:, :, :, :-pad_w]
                 pred[:, :, sy:sy + crop_size, sx:sx + crop_size] = pred_sub
         score = (pred / count[None, None, ...]).astype(np.float32)
     else:
@@ -86,7 +98,6 @@ def inference(model, n_class, base_size, crop_size, img, scaling=True):
         scales = [0.5, 0.75, 1, 1.25, 1.5, 1.75]
         for scale in scales:
             pred += scale_process(model, img, n_class, base_size, crop_size, scale)
-            print('scale:', scale)
         pred = pred / float(len(scales))
     else:
         pred = scale_process(model, img, n_class, base_size, crop_size, 1.0)

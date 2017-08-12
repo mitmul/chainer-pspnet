@@ -5,7 +5,7 @@ import numpy as np
 import chainer
 import chainer.functions as F
 import chainer.links as L
-from distbn import DistributedBatchNormalization
+from chainermn.links import MultiNodeBatchNormalization
 
 
 class ConvBNReLU(chainer.Chain):
@@ -22,7 +22,7 @@ class ConvBNReLU(chainer.Chain):
                 self.conv = L.Convolution2D(
                     in_ch, out_ch, ksize, stride, pad, True, w)
             if comm is not None:
-                self.bn = DistributedBatchNormalization(out_ch, comm)
+                self.bn = MultiNodeBatchNormalization(out_ch, comm)
             else:
                 self.bn = L.BatchNormalization(out_ch)
 
@@ -45,15 +45,7 @@ class PyramidPoolingModule(chainer.ChainList):
         ys = [x]
         h, w = x.shape[2:]
         for f, ksize in zip(self, self.ksizes):
-            ksize = (ksize, ksize)
-
-            # Calc padding sizes
-            h_rem, w_rem = h % ksize[0], w % ksize[1]
-            pad_h = int(ceil((ksize[0] - h_rem) / 2.0)) if h_rem > 0 else 0
-            pad_w = int(ceil((ksize[1] - w_rem) / 2.0)) if w_rem > 0 else 0
-            pad = (pad_h, pad_w)
-
-            y = F.average_pooling_2d(x, ksize, ksize, pad)
+            y = F.average_pooling_2d(x, ksize, ksize)  # Pad should be 0!
             y = f(y)  # Reduce num of channels
             y = F.resize_images(y, (h, w))
             ys.append(y)

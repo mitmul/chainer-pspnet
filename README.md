@@ -38,7 +38,6 @@ $ bash download.sh
 $ python demo.py -g 0 -m Cityscapes -f aachen_000000_000019_leftImg8bit.png
 ```
 
-
 # Convert weights by yourself
 
 **Caffe is NOT needed** to convert `.caffemodel` to Chainer model. Use `caffe_pb2.py`.
