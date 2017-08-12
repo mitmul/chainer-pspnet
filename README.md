@@ -10,12 +10,14 @@ This is an unofficial implementation of Pyramid Scene Parsing Network (PSPNet) i
 - Python 3.4.4+
     - Chainer 3.0.0b1+
     - ChainerMN master@distributed-batch-normalization
-        - `pip install git+https://github.com/chainer/chainermn@distributed-batch-normalization`
+        - `pip install git+git://github.com/chainer/chainermn.git@distributed-batch-normalization`
     - CuPy 2.0.0b1+
     - ChainerCV 0.6.0+
     - cffi 1.10.0+
     - NumPy 1.12.0+
     - mpi4py 2.0.0+
+
+---
 
 # Inference using converted weights
 
