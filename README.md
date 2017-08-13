@@ -13,9 +13,7 @@ This is an unofficial implementation of Pyramid Scene Parsing Network (PSPNet) i
         - `pip install git+git://github.com/chainer/chainermn.git@distributed-batch-normalization`
     - CuPy 2.0.0b1+
     - ChainerCV 0.6.0+
-    - cffi 1.10.0+
     - NumPy 1.12.0+
-    - mpi4py 2.0.0+
     - tqdm 4.11.0+
 
 ---
@@ -28,10 +26,8 @@ This is an unofficial implementation of Pyramid Scene Parsing Network (PSPNet) i
     - Chainer 3.0.0b1+
     - ChainerCV 0.6.0+
     - Matplotlib 2.0.0+
-    - ChainerMN master@distributed-batch-normalization
-        - `pip install git+git://github.com/chainer/chainermn.git@distributed-batch-normalization`
     - CuPy 2.0.0b1+
-    - tqdm
+    - tqdm 4.11.0+
 
 ## 1. Download converted weights
 
@@ -44,6 +40,8 @@ $ bash download.sh
 ```
 $ python demo.py -g 0 -m Cityscapes -f aachen_000000_000019_leftImg8bit.png
 ```
+
+---
 
 # Convert weights by yourself
 
