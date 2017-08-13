@@ -33,20 +33,26 @@ class CityscapesSemanticSegmentationDataset(dataset.DatasetMixin):
 
     def __init__(self, img_dir, label_dir, split='train', ignore_labels=True):
         img_dir = os.path.join(img_dir, split)
-        resol = os.path.basename(label_dir)
         self.ignore_labels = ignore_labels
 
-        self.label_fns = []
-        for dname in glob.glob('{}/*'.format(label_dir)):
-            if split in dname:
-                for label_fn in glob.glob('{}/*/*_labelIds.png'.format(dname)):
-                    self.label_fns.append(label_fn)
-
-        self.img_fns = []
-        for label_fn in self.label_fns:
-            img_fn = label_fn.replace(resol, 'leftImg8bit')
-            img_fn = img_fn.replace('_labelIds', '')
-            self.img_fns.append(img_fn)
+        self.label_fns, self.img_fns = [], []
+        if label_dir is not None:
+            resol = os.path.basename(label_dir)
+            for dname in glob.glob('{}/*'.format(label_dir)):
+                if split in dname:
+                    for label_fn in glob.glob(
+                            '{}/*/*_labelIds.png'.format(dname)):
+                        self.label_fns.append(label_fn)
+            for label_fn in self.label_fns:
+                img_fn = label_fn.replace(resol, 'leftImg8bit')
+                img_fn = img_fn.replace('_labelIds', '')
+                self.img_fns.append(img_fn)
+        else:
+            for dname in glob.glob('{}/*'.format(img_dir)):
+                if split in dname:
+                    for img_fn in glob.glob(
+                            '{}/*_leftImg8bit.png'.format(dname)):
+                        self.img_fns.append(img_fn)
 
     def __len__(self):
         return len(self.img_fns)
@@ -68,6 +74,8 @@ class CityscapesSemanticSegmentationDataset(dataset.DatasetMixin):
 
         """
         img = read_image(self.img_fns[i])
+        if self.label_fns == []:
+            return img
         label_orig = read_image(
             self.label_fns[i], dtype=np.int32, color=False)[0]
         H, W = label_orig.shape

@@ -1,3 +1,4 @@
+hosts.txt
 *.jpg
 *.png
 .DS_Store
@@ -5,6 +6,8 @@
 weights/*.chainer
 weights/*.caffemodel
 shells
+results
+caffe
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

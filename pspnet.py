@@ -1,5 +1,3 @@
-from math import ceil
-
 import numpy as np
 
 import chainer
@@ -22,9 +20,10 @@ class ConvBNReLU(chainer.Chain):
                 self.conv = L.Convolution2D(
                     in_ch, out_ch, ksize, stride, pad, True, w)
             if comm is not None:
-                self.bn = MultiNodeBatchNormalization(out_ch, comm)
+                self.bn = MultiNodeBatchNormalization(
+                    out_ch, comm, eps=1e-5, decay=0.95)
             else:
-                self.bn = L.BatchNormalization(out_ch)
+                self.bn = L.BatchNormalization(out_ch, eps=1e-5, decay=0.95)
 
     def __call__(self, x, relu=True):
         h = self.bn(self.conv(x))
@@ -214,7 +213,9 @@ class PSPNet(chainer.Chain):
 
         h = self.ppm(h)
         h = F.dropout(self.cbr_main(h), ratio=0.1)
+        self.after_dropout = h
         h = self.out_main(h)
+        self.before_resize = h
         h = F.resize_images(h, x.shape[2:])
 
         if chainer.config.train:

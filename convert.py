@@ -27,7 +27,8 @@ def get_chainer_model(n_class, n_layers, feat_size, mid_stride):
     else:
         raise ValueError('{} is currently not supported'.format(n_layers))
     model = PSPNet(n_class, n_blocks, feat_size, mid_stride=mid_stride)
-    model(np.random.rand(1, 3, 32, 32).astype(np.float32))
+    in_size = 713 if feat_size == 90 else 473
+    model(np.random.rand(1, 3, in_size, in_size).astype(np.float32))
     size = 0
     for param in model.params():
         size += param.size
@@ -52,10 +53,10 @@ def get_param_net(prodo_dir, param_fn, proto_fn):
 
 def copy_conv(layer, config, conv, has_bias=False):
     data = np.array(layer.blobs[0].data)
-    conv.W.data[...] = data.reshape(conv.W.shape)
+    conv.W.data[:] = data.reshape(conv.W.shape)
     if has_bias:
         data = np.array(layer.blobs[1].data)
-        conv.b.data[...] = data.reshape(conv.b.shape)
+        conv.b.data[:] = data.reshape(conv.b.shape)
 
     # Check ksize
     assert config.convolution_param.kernel_size[0] == conv.ksize, \
@@ -95,10 +96,14 @@ def copy_cbr(layer, config, cbr):
     if 'Convolution' in layer.type:
         cbr.conv = copy_conv(layer, config, cbr.conv)
     elif 'BN' in layer.type:
-        cbr.bn.gamma.data[...] = layer.blobs[0].data
-        cbr.bn.beta.data[...] = layer.blobs[1].data
-        cbr.bn.avg_mean[...] = layer.blobs[2].data
-        cbr.bn.avg_var[...] = layer.blobs[3].data
+        cbr.bn.eps = config.bn_param.eps
+        cbr.bn.decay = config.bn_param.momentum
+        # cbr.bn.gamma.data.ravel()[:] = np.array(layer.blobs[0].data).ravel()
+        # cbr.bn.beta.data.ravel()[:] = np.array(layer.blobs[1].data).ravel()
+        cbr.bn.avg_mean.ravel()[:] = np.array(layer.blobs[2].data).ravel()
+        cbr.bn.avg_var.ravel()[:] = np.array(layer.blobs[3].data).ravel()
+        cbr.bn.gamma.data[:] = np.ones(cbr.bn.avg_mean.shape, dtype=np.float32)
+        cbr.bn.beta.data[:] = np.zeros(cbr.bn.avg_mean.shape, dtype=np.float32)
     else:
         print('Ignored: {} ({})'.format(layer.name, layer.type))
     return cbr
@@ -204,10 +209,10 @@ if __name__ == '__main__':
     # ADE20K: 46782550
 
     for param_fn, proto_fn, n_layers, n_class, feat_size, mid_stride in [
-        ('pspnet101_VOC2012.caffemodel',
-         'pspnet101_VOC2012_473.prototxt', 101, 21, 60, True),
         ('pspnet101_cityscapes.caffemodel',
          'pspnet101_cityscapes_713.prototxt', 101, 19, 90, True),
+        ('pspnet101_VOC2012.caffemodel',
+         'pspnet101_VOC2012_473.prototxt', 101, 21, 60, True),
         ('pspnet50_ADE20K.caffemodel',
          'pspnet50_ADE20K_473.prototxt', 50, 150, 60, False)
     ]:
