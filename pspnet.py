@@ -183,7 +183,7 @@ class PSPNet(chainer.Chain):
     """
 
     def __init__(self, n_class, n_blocks=[3, 4, 23, 3], feat_size=90,
-                 pyramids=[1, 2, 3, 6], mid_stride=True, comm=None):
+                 pyramids=[6, 3, 2, 1], mid_stride=True, comm=None):
         chainer.config.mid_stride = mid_stride
         chainer.config.comm = comm
         super().__init__()
@@ -212,11 +212,8 @@ class PSPNet(chainer.Chain):
             h = self.trunk(x)
 
         h = self.ppm(h)
-        self.ppm_out = h
         h = F.dropout(self.cbr_main(h), ratio=0.1)
-        self.after_dropout = h
         h = self.out_main(h)
-        self.before_resize = h
         h = F.resize_images(h, x.shape[2:])
 
         if chainer.config.train:

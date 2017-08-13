@@ -102,8 +102,6 @@ def copy_cbr(layer, config, cbr):
         cbr.bn.beta.data.ravel()[:] = np.array(layer.blobs[1].data).ravel()
         cbr.bn.avg_mean.ravel()[:] = np.array(layer.blobs[2].data).ravel()
         cbr.bn.avg_var.ravel()[:] = np.array(layer.blobs[3].data).ravel()
-        # cbr.bn.gamma.data[:] = np.ones(cbr.bn.avg_mean.shape, dtype=np.float32)
-        # cbr.bn.beta.data[:] = np.zeros(cbr.bn.avg_mean.shape, dtype=np.float32)
     else:
         print('Ignored: {} ({})'.format(layer.name, layer.type))
     return cbr
@@ -149,7 +147,10 @@ def copy_ppm_module(layer, config, block):
         raise ValueError('Error in copy_ppm_module:'
                          '{}, {}, {}'.format(layer.name, config, block))
     i = int(ret.groups()[0])
-    i = {1: 0, 2: 1, 3: 2, 6: 3}[i]
+    i = {1: 3,
+         2: 2,
+         3: 1,
+         6: 0}[i]
     block._children[i] = copy_cbr(layer, config, block[i])
     return block
 
