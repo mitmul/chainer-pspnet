@@ -27,7 +27,6 @@ if __name__ == '__main__':
     parser.add_argument('--img_fn', '-f', type=str)
     parser.add_argument('--gpu', '-g', type=int, default=-1)
     parser.add_argument('--scales', '-s', type=float, nargs='*', default=None)
-    parser.add_argument('--weights', '-w', type=float, nargs='*', default=None)
     parser.add_argument(
         '--model', '-m', type=str, choices=['VOC', 'Cityscapes', 'ADE20K'])
     parser.add_argument('--stride_rate', type=float, default=2 / 3)
@@ -77,7 +76,7 @@ if __name__ == '__main__':
 
     # Inference
     pred = inference(
-        model, n_class, base_size, crop_size, img, args.scales, args.weights)
+        model, n_class, base_size, crop_size, img, args.scales)
 
     # Save the result image
     ax = vis_image(img)

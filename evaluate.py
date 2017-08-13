@@ -126,17 +126,14 @@ def scale_process(model, img, n_class, base_size, crop_size, scale):
     return score
 
 
-def inference(model, n_class, base_size, crop_size, img, scales, weights):
+def inference(model, n_class, base_size, crop_size, img, scales):
     pred = np.zeros((n_class, img.shape[1], img.shape[2]))
     if scales is not None and isinstance(scales, (list, tuple)):
         for i, scale in enumerate(scales):
-            scale_p = scale_process(model, img, n_class, base_size, crop_size, scale)
-            if weights is not None:
-                scale_p *= weights[i]
-            pred += scale_p
+            pred += scale_process(
+                model, img, n_class, base_size, crop_size, scale)
         pred = pred / float(len(scales))
     else:
-        print('scale:', scales)
         pred = scale_process(model, img, n_class, base_size, crop_size, 1.0)
     pred = np.argmax(pred, axis=0)
     return pred
@@ -146,7 +143,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--gpu', type=int, default=-1)
     parser.add_argument('--scales', type=float, nargs='*', default=None)
-    parser.add_argument('--weights', type=float, nargs='*', default=None)
     parser.add_argument(
         '--model', type=str, choices=['VOC', 'Cityscapes', 'ADE20K'])
     parser.add_argument('--cityscapes_img_dir', type=str, default=None)
@@ -213,7 +209,7 @@ if __name__ == '__main__':
         out_fn = os.path.join(
             args.out_dir, os.path.basename(dataset._dataset.img_fns[i]))
         pred = inference(
-            model, n_class, base_size, crop_size, img, args.scales, args.weights)
+            model, n_class, base_size, crop_size, img, args.scales)
         assert pred.ndim == 2
 
         if args.model == 'Cityscapes':
