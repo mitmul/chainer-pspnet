@@ -98,12 +98,12 @@ def copy_cbr(layer, config, cbr):
     elif 'BN' in layer.type:
         cbr.bn.eps = config.bn_param.eps
         cbr.bn.decay = config.bn_param.momentum
-        # cbr.bn.gamma.data.ravel()[:] = np.array(layer.blobs[0].data).ravel()
-        # cbr.bn.beta.data.ravel()[:] = np.array(layer.blobs[1].data).ravel()
+        cbr.bn.gamma.data.ravel()[:] = np.array(layer.blobs[0].data).ravel()
+        cbr.bn.beta.data.ravel()[:] = np.array(layer.blobs[1].data).ravel()
         cbr.bn.avg_mean.ravel()[:] = np.array(layer.blobs[2].data).ravel()
         cbr.bn.avg_var.ravel()[:] = np.array(layer.blobs[3].data).ravel()
-        cbr.bn.gamma.data[:] = np.ones(cbr.bn.avg_mean.shape, dtype=np.float32)
-        cbr.bn.beta.data[:] = np.zeros(cbr.bn.avg_mean.shape, dtype=np.float32)
+        # cbr.bn.gamma.data[:] = np.ones(cbr.bn.avg_mean.shape, dtype=np.float32)
+        # cbr.bn.beta.data[:] = np.zeros(cbr.bn.avg_mean.shape, dtype=np.float32)
     else:
         print('Ignored: {} ({})'.format(layer.name, layer.type))
     return cbr

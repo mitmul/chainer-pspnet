@@ -212,6 +212,7 @@ class PSPNet(chainer.Chain):
             h = self.trunk(x)
 
         h = self.ppm(h)
+        self.ppm_out = h
         h = F.dropout(self.cbr_main(h), ratio=0.1)
         self.after_dropout = h
         h = self.out_main(h)
