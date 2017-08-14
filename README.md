@@ -3,7 +3,7 @@ PSPNet
 
 This is an unofficial implementation of Pyramid Scene Parsing Network (PSPNet) in [Chainer](https://github.com/chainer/chainer).
 
-![](https://github.com/mitmul/chainer-pspnet/releases/download/PSPNet_reference_weights/demoVideo.gif)
+![](https://github.com/mitmul/chainer-pspnet/wiki/images/demoVideo.gif)
 
 # Training
 
