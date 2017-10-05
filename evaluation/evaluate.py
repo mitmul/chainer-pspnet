@@ -59,6 +59,7 @@ if __name__ == '__main__':
     parser.add_argument('--end_i', type=int)
     parser.add_argument('--split', type=str)
     parser.add_argument('--param_fn', type=str)
+    parser.add_argument('--single_scale', action='store_true', default=False)
     parser.add_argument('--out_dir', type=str, default='results')
     args = parser.parse_args()
 
@@ -69,6 +70,8 @@ if __name__ == '__main__':
             os.makedirs(args.out_dir)
 
     scales = [0.5, 0.75, 1, 1.25, 1.5, 1.75]
+    if args.single_scale:
+        scales = [1.0]
     mean = np.array([123.68, 116.779, 103.939])
     comm = None
 
