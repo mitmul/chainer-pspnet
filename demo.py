@@ -14,7 +14,7 @@ from chainercv.datasets import voc_semantic_segmentation_label_colors
 from chainercv.datasets import voc_semantic_segmentation_label_names
 from chainercv.utils import read_image
 from chainercv.visualizations import vis_image
-from chainercv.visualizations import vis_label
+from chainercv.visualizations import vis_semantic_segmentation
 from datasets import ade20k_label_colors
 from datasets import ade20k_label_names
 from datasets import cityscapes_label_colors
@@ -55,7 +55,8 @@ if __name__ == '__main__':
 
     # Save the result image
     ax = vis_image(img)
-    _, legend_handles = vis_label(pred, labels, colors, alpha=1.0, ax=ax)
+    _, legend_handles = vis_semantic_segmentation(
+        pred, labels, colors, alpha=1.0, ax=ax)
     ax.legend(handles=legend_handles, bbox_to_anchor=(1.05, 1), loc=2,
               borderaxespad=0.)
     base = os.path.splitext(os.path.basename(args.img_fn))[0]
